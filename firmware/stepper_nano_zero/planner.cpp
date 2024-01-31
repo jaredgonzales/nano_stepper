@@ -145,9 +145,14 @@ void Planner::tick(void)
 
 	if (currentMode == PLANNER_VERIFY)
 	{
-		if (fabs(currentSetAngle - endAngle) <= 100)
+		// Confirm that position is within expected threshold
+		int32_t position_threshold = 20;
+		if (fabs(currentSetAngle - endAngle) <= position_threshold)
 		{
-			SerialUSB.println("Done.");
+			SerialUSB.println("DONE");
+#ifdef CMD_SERIAL_PORT
+			Serial5.println("DONE");
+#endif
 			currentMode=PLANNER_NONE;
 		}
 	}
