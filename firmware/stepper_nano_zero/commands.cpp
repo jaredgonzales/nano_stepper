@@ -99,7 +99,7 @@ CMD_STR(stepsperrotation, "gets/set the motor steps per rotation, should only be
 //CMD_STR(motorparams, "with no arguments read parameters, will set with arguments");
 CMD_STR(boot, "Enters the bootloader");
 CMD_STR(move, "moves encoder to absolute angle in degrees 'move 400.1'");
-//CMD_STR(printdata, "prints last n error terms");
+CMD_STR(printdata, "prints last n error terms");
 CMD_STR(velocity, "gets/set velocity in RPMs");
 CMD_STR(factoryreset, "resets board to factory defaults");
 CMD_STR(stop, "stops the motion planner");
@@ -157,7 +157,7 @@ sCommand Cmds[] =
 		//COMMAND(motorparams),
 		COMMAND(boot),
 		COMMAND(move),
-		//COMMAND(printdata),
+		COMMAND(printdata),
 		COMMAND(velocity),
 		COMMAND(factoryreset),
 		COMMAND(stop),
@@ -1027,15 +1027,15 @@ static int velocity_cmd(sCmdUart *ptrUart,int argc, char * argv[])
 	return 0;
 }
 
-//
-//static int printdata_cmd(sCmdUart *ptrUart,int argc, char * argv[])
-//{
-//	int32_t x;
-//
-//	stepperCtrl.printData();
-//
-//	return 0;
-//}
+
+static int printdata_cmd(sCmdUart *ptrUart,int argc, char * argv[])
+{
+	int32_t x;
+
+	stepperCtrl.PrintData();
+
+	return 0;
+}
 
 
 static int move_cmd(sCmdUart *ptrUart,int argc, char * argv[])
