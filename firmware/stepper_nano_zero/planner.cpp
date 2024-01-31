@@ -139,6 +139,15 @@ void Planner::tick(void)
 			//SerialUSB.println("done");
 			x=ANGLE_FROM_DEGREES(endAngle);
 			ptrStepperCtrl->moveToAbsAngle(x);
+			currentMode=PLANNER_VERIFY;
+		}
+	}
+
+	if (currentMode == PLANNER_VERIFY)
+	{
+		if (fabs(currentSetAngle - endAngle) <= 100)
+		{
+			SerialUSB.println("Done.");
 			currentMode=PLANNER_NONE;
 		}
 	}
