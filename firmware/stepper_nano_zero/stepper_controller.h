@@ -200,6 +200,8 @@ class StepperCtrl
 		int64_t getCurrentAngle(void);
 		int64_t getDesiredAngle(void);
 
+		void waitForDesiredAngle(int64_t threshold); // blocks until movement reaches desired angle
+
 		void move(int dir, uint16_t steps); //forces motor to move even if feedback controller is turned off.
 		void enable(bool enable);
 		bool getEnable(void) {return enabled;}

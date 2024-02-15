@@ -1056,6 +1056,7 @@ static int move_cmd(sCmdUart *ptrUart,int argc, char * argv[])
 		LOG("moving %d", x);
 
 		stepperCtrl.moveToAbsAngle(x);
+		stepperCtrl.waitForDesiredAngle(2);
 	}
 	if (2 == argc)
 	{

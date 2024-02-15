@@ -966,6 +966,17 @@ int64_t StepperCtrl::getDesiredAngle(void)
 	return x;
 }
 
+void StepperCtrl::waitForDesiredAngle(int64_t threshold)
+{
+	while (abs(getCurrentAngle() - getDesiredAngle()) > threshold) {
+		// Do not end until current angle matches desired
+	}
+	SerialUSB.println("DONE");
+#ifdef CMD_SERIAL_PORT
+	Serial5.println("DONE");
+#endif
+}
+
 void StepperCtrl::setVelocity(int64_t vel)
 {
 	bool state=enterCriticalSection();
