@@ -139,25 +139,9 @@ void Planner::tick(void)
 			//SerialUSB.println("done");
 			x=ANGLE_FROM_DEGREES(endAngle);
 			ptrStepperCtrl->moveToAbsAngle(x);
-			currentMode=PLANNER_VERIFY;
-		}
-	}
-
-	if (currentMode == PLANNER_VERIFY)
-	{
-		// Confirm that position is within expected threshold
-		int32_t position_threshold = 20;
-		if (fabs(currentSetAngle - endAngle) <= position_threshold)
-		{
-			SerialUSB.println("DONE");
-#ifdef CMD_SERIAL_PORT
-			Serial5.println("DONE");
-#endif
 			currentMode=PLANNER_NONE;
 		}
 	}
-
-
 }
 
 void Planner::stop(void)

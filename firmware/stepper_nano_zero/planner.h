@@ -41,7 +41,6 @@ typedef enum {
 	PLANNER_CV =1, //constant velocity
 	//PLANNER_CA =2, //constant accleration
 	//PLANNER_S_CURVE =3, //s-curve move
-	PLANNER_VERIFY = 4,
 } PlannerMode;
 class Planner
 {
