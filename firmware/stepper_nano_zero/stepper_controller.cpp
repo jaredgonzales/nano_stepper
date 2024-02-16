@@ -901,6 +901,7 @@ void StepperCtrl::moveToAbsAngle(int32_t a)
 	ret=(((int64_t)a+zeroAngleOffset)*n+ANGLE_STEPS/2)/(int32_t)ANGLE_STEPS;
 	bool state=enterCriticalSection();
 	numSteps=ret;
+	isMoving=true;
 	exitCriticalSection(state);
 }
 
@@ -966,15 +967,13 @@ int64_t StepperCtrl::getDesiredAngle(void)
 	return x;
 }
 
-void StepperCtrl::waitForDesiredAngle(int64_t threshold)
+bool StepperCtrl::checkForRequestedAngle(void)
 {
-	while (abs(getCurrentAngle() - getDesiredAngle()) > threshold) {
-		// Do not end until current angle matches desired
-	}
-	SerialUSB.println("DONE");
-#ifdef CMD_SERIAL_PORT
-	Serial5.println("DONE");
-#endif
+	int64_t current_angle;
+	bool state=enterCriticalSection();
+	current_angle = getCurrentAngle();
+	exitCriticalSection(state);
+	return (abs(current_angle - requestedAngle) < 2);
 }
 
 void StepperCtrl::setVelocity(int64_t vel)
@@ -993,6 +992,22 @@ int64_t StepperCtrl::getVelocity(void)
 	vel=velocity;
 	exitCriticalSection(state);
 	return vel;
+}
+
+void StepperCtrl::setRequestedAngle(int64_t angle)
+{
+	bool state=enterCriticalSection();
+	requestedAngle = angle;
+	exitCriticalSection(state);
+}
+
+int64_t StepperCtrl::getRequestedAngle(void)
+{
+	int64_t angle;
+	bool state=enterCriticalSection();
+	angle = requestedAngle;
+	exitCriticalSection(state);
+	return angle;
 }
 
 void StepperCtrl::PrintData(void)
@@ -1577,7 +1592,8 @@ bool StepperCtrl::processFeedback(void)
 	int64_t desiredLoc;
 	int64_t currentLoc;
 	int32_t steps;
-	static int64_t mean=0;;
+	static int64_t mean=0;
+	bool moving_flag;
 
 	us=micros();
 
@@ -1588,6 +1604,22 @@ bool StepperCtrl::processFeedback(void)
 	updateSteps(x);
 	lastSteps+=x;
 #endif
+
+	bool state=enterCriticalSection();
+	moving_flag = isMoving;
+	exitCriticalSection(state);
+	if (isMoving) {
+		if (checkForRequestedAngle()) {
+			SerialUSB.println("DONE");
+#ifdef CMD_SERIAL_PORT
+			Serial5.println("DONE");
+#endif
+			bool state=enterCriticalSection();
+			isMoving = false;
+			exitCriticalSection(state);
+			
+		}
+	}
 
 //	steps=getSteps();
 //	if (steps>0)
@@ -1611,8 +1643,6 @@ bool StepperCtrl::processFeedback(void)
 		{
 			currentLoc=mean;
 		}
-
-
 
 	switch (systemParams.controllerMode)
 	{

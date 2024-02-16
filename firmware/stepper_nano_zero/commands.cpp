@@ -1040,69 +1040,31 @@ static int printdata_cmd(sCmdUart *ptrUart,int argc, char * argv[])
 
 static int move_cmd(sCmdUart *ptrUart,int argc, char * argv[])
 {
-	int32_t x,ma;
-	//CommandPrintf(ptrUart, "Move %d",argc);
+	int32_t x;
+
 
 	if (1 == argc)
 	{
 		float f;
-
 		f=atof(argv[0]);
-		//		if (f>1.8)
-		//			f=1.8;
-		//		if (f<-1.8)
-		//			f=-1.8;
 		x=ANGLE_FROM_DEGREES(f);
 		LOG("moving %d", x);
-
+		stepperCtrl.setRequestedAngle((int64_t)x);
 		stepperCtrl.moveToAbsAngle(x);
-		stepperCtrl.waitForDesiredAngle(2);
+		
 	}
 	if (2 == argc)
 	{
-		float f,rpm,a,y;
-		float pos,dx;
+		float f, rpm;
 
 		f=atof(argv[0]);
 		rpm=atof(argv[1]);
-		//		if (f>1.8)
-		//			f=1.8;
-		//		if (f<-1.8)
-		//			f=-1.8;
 
-		SmartPlanner.moveConstantVelocity(f,rpm);
-		return 0;
-		a=360*rpm/60/1000; //rotations/100ms
-
-		pos=ANGLE_T0_DEGREES(stepperCtrl.getCurrentAngle());
-		y=pos;
-		if (y>f) a=-a;
-
-#ifndef MECHADUINO_HARDWARE
-		SerialUSB.println(f);
-		SerialUSB.println(y);
-		SerialUSB.println(a);
-#endif
-
-		while (abs(y-f)>(2*abs(a)))
-		{
-			//			SerialUSB.println();
-			//			SerialUSB.println(f);
-			//		SerialUSB.println(y);
-			//		SerialUSB.println(a);
-			y=y+a;
-
-			x=ANGLE_FROM_DEGREES(y);
-			//LOG("moving %d", x);
-			stepperCtrl.moveToAbsAngle(x);
-			delay(1);
-			//y=stepperCtrl.getCurrentAngle();
-		}
 		x=ANGLE_FROM_DEGREES(f);
 		LOG("moving %d", x);
-		stepperCtrl.moveToAbsAngle(x);
+		stepperCtrl.setRequestedAngle((int64_t)x);
+		SmartPlanner.moveConstantVelocity(f,rpm);
 	}
-
 	return 0;
 }
 
