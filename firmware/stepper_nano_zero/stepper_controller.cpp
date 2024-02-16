@@ -969,10 +969,7 @@ int64_t StepperCtrl::getDesiredAngle(void)
 
 bool StepperCtrl::checkForRequestedAngle(void)
 {
-	int64_t current_angle;
-	bool state=enterCriticalSection();
-	current_angle = getCurrentAngle();
-	exitCriticalSection(state);
+	int64_t current_angle = getCurrentAngle();
 	return (abs(current_angle - requestedAngle) < 2);
 }
 
@@ -1605,19 +1602,13 @@ bool StepperCtrl::processFeedback(void)
 	lastSteps+=x;
 #endif
 
-	bool state=enterCriticalSection();
-	moving_flag = isMoving;
-	exitCriticalSection(state);
 	if (isMoving) {
 		if (checkForRequestedAngle()) {
 			SerialUSB.println("DONE");
 #ifdef CMD_SERIAL_PORT
 			Serial5.println("DONE");
 #endif
-			bool state=enterCriticalSection();
 			isMoving = false;
-			exitCriticalSection(state);
-			
 		}
 	}
 
