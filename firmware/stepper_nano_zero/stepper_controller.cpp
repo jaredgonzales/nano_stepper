@@ -901,7 +901,7 @@ void StepperCtrl::moveToAbsAngle(int32_t a)
 	ret=(((int64_t)a+zeroAngleOffset)*n+ANGLE_STEPS/2)/(int32_t)ANGLE_STEPS;
 	bool state=enterCriticalSection();
 	numSteps=ret;
-	isMoving=true;
+	setIsMoving(true);
 	exitCriticalSection(state);
 }
 
@@ -967,12 +967,6 @@ int64_t StepperCtrl::getDesiredAngle(void)
 	return x;
 }
 
-bool StepperCtrl::checkForRequestedAngle(void)
-{
-	int64_t current_angle = getCurrentAngle();
-	return (abs(current_angle - requestedAngle) < 2);
-}
-
 void StepperCtrl::setVelocity(int64_t vel)
 {
 	bool state=enterCriticalSection();
@@ -1005,6 +999,32 @@ int64_t StepperCtrl::getRequestedAngle(void)
 	angle = requestedAngle;
 	exitCriticalSection(state);
 	return angle;
+}
+
+bool StepperCtrl::checkForRequestedAngle(void)
+{
+	int64_t current, requested;
+	bool state=enterCriticalSection();
+	current = getCurrentAngle();
+	requested = getRequestedAngle();
+	exitCriticalSection(state);
+	return (abs(current - requested) < 2);
+}
+
+void StepperCtrl::setIsMoving(bool moving_flag)
+{
+	bool state=enterCriticalSection();
+	isMoving = moving_flag;
+	exitCriticalSection(state);
+}
+
+bool StepperCtrl::getIsMoving(void)
+{
+	bool moving_flag;
+	bool state=enterCriticalSection();
+	moving_flag = isMoving;
+	exitCriticalSection(state);
+	return moving_flag;
 }
 
 void StepperCtrl::PrintData(void)
@@ -1602,15 +1622,18 @@ bool StepperCtrl::processFeedback(void)
 	lastSteps+=x;
 #endif
 
-	if (isMoving) {
+	bool state=enterCriticalSection();
+	if (getIsMoving()) {
 		if (checkForRequestedAngle()) {
+			// TODO: Move IO outside of interrupt loop
 			SerialUSB.println("DONE");
 #ifdef CMD_SERIAL_PORT
 			Serial5.println("DONE");
 #endif
-			isMoving = false;
+			setIsMoving(false);
 		}
 	}
+	exitCriticalSection(state)
 
 //	steps=getSteps();
 //	if (steps>0)
