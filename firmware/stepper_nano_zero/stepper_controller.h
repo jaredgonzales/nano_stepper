@@ -200,7 +200,7 @@ class StepperCtrl
 		int64_t getCurrentAngle(void);
 		int64_t getDesiredAngle(void);
 
-		volatile int64_t requestedAngle;
+		volatile int64_t requestedAngle; // Allows checking for when the angle requested by a user is found
 		void setRequestedAngle(int64_t angle);
 		int64_t getRequestedAngle(void);
 
