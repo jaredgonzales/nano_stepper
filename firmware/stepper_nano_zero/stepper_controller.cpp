@@ -1008,7 +1008,8 @@ bool StepperCtrl::checkForRequestedAngle(void)
 	current = getCurrentAngle();
 	requested = getRequestedAngle();
 	exitCriticalSection(state);
-	return (abs(current - requested) < 2);
+	// NOTE: Threshold must be large enough to not lock up
+	return (abs(current - requested) < 5);
 }
 
 void StepperCtrl::setIsMoving(bool moving_flag)
@@ -1625,7 +1626,6 @@ bool StepperCtrl::processFeedback(void)
 	bool state=enterCriticalSection();
 	if (getIsMoving()) {
 		if (checkForRequestedAngle()) {
-			// TODO: Move IO outside of interrupt loop
 			SerialUSB.println("DONE");
 #ifdef CMD_SERIAL_PORT
 			Serial5.println("DONE");
@@ -1633,7 +1633,7 @@ bool StepperCtrl::processFeedback(void)
 			setIsMoving(false);
 		}
 	}
-	exitCriticalSection(state)
+	exitCriticalSection(state);
 
 //	steps=getSteps();
 //	if (steps>0)
