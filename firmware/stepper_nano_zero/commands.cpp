@@ -1064,6 +1064,14 @@ static int move_cmd(sCmdUart *ptrUart,int argc, char * argv[])
 		stepperCtrl.setRequestedAngle((int64_t)x); // Allows us to check when movement is done
 		SmartPlanner.moveConstantVelocity(f,rpm);
 	}
+	while (stepperCtrl.getIsMoving())
+	{
+		// Do nothing
+	}
+	SerialUSB.println("DONE");
+#ifdef CMD_SERIAL_PORT
+	Serial5.println("DONE");
+#endif
 	return 0;
 }
 

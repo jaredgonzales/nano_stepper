@@ -1611,7 +1611,6 @@ bool StepperCtrl::processFeedback(void)
 	int64_t currentLoc;
 	int32_t steps;
 	static int64_t mean=0;
-	bool moving_flag;
 
 	us=micros();
 
@@ -1626,10 +1625,6 @@ bool StepperCtrl::processFeedback(void)
 	bool state=enterCriticalSection();
 	if (getIsMoving()) {
 		if (checkForRequestedAngle()) {
-			SerialUSB.println("DONE");
-#ifdef CMD_SERIAL_PORT
-			Serial5.println("DONE");
-#endif
 			setIsMoving(false);
 		}
 	}
