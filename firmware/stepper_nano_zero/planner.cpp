@@ -142,8 +142,6 @@ void Planner::tick(void)
 			currentMode=PLANNER_NONE;
 		}
 	}
-
-
 }
 
 void Planner::stop(void)
