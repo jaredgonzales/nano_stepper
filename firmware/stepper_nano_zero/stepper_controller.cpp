@@ -1012,6 +1012,22 @@ bool StepperCtrl::checkForRequestedAngle(void)
 	return (abs(current - requested) < 5);
 }
 
+void StepperCtrl::setRequestedAngleReached(bool request_flag)
+{
+	bool state=enterCriticalSection();
+	requestedAngleReached = request_flag;
+	exitCriticalSection(state);
+}
+
+bool StepperCtrl::getRequestedAngleReached(void)
+{
+	bool request_flag;
+	bool state=enterCriticalSection();
+	request_flag = requestedAngleReached;
+	exitCriticalSection(state);
+	return request_flag;
+}
+
 void StepperCtrl::setIsMoving(bool moving_flag)
 {
 	bool state=enterCriticalSection();

@@ -204,6 +204,9 @@ class StepperCtrl
 		void setRequestedAngle(int64_t angle);
 		int64_t getRequestedAngle(void);
 		bool checkForRequestedAngle(void);
+		volatile bool requestedAngleReached;
+		void setRequestedAngleReached(bool request_flag);
+		bool getRequestedAngleReached(void);
 
 		volatile bool isMoving; // Flag for when it should be checking if requestedAngle was reached
 		void setIsMoving(bool moving_flag);

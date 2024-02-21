@@ -882,6 +882,18 @@ void NZS::loop(void)
 	eepromData.valid=1;
 	eepromWriteCache((uint8_t *)&eepromData,sizeof(eepromData));
 
+	if (!stepperCtrl.getRequestedAngleReached())
+	{
+		if (stepperCtrl.checkForRequestedAngle())
+		{
+			stepperCtrl.setRequestedAngleReached(true);
+			SerialUSB.println("DONE");
+#ifdef CMD_SERIAL_PORT
+			Serial5.println("DONE");
+#endif
+		}
+	}
+
 	commandsProcess(); //handle commands
 #ifndef DISABLE_LCD
 	Lcd.process();
