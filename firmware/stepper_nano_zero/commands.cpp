@@ -1066,6 +1066,15 @@ static int move_cmd(sCmdUart *ptrUart,int argc, char * argv[])
 		stepperCtrl.setRequestedAngleReached(false);
 		SmartPlanner.moveConstantVelocity(f,rpm);
 	}
+	
+	// Respond extra quick to small request
+	if (stepperCtrl.checkForRequestedAngle())
+	{
+		SerialUSB.println("DONE");
+#ifdef CMD_SERIAL_PORT
+		Serial5.println("DONE");
+#endif
+	}
 	return 0;
 }
 

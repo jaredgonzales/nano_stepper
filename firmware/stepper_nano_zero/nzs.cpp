@@ -875,6 +875,10 @@ void NZS::loop(void)
 	{
 		stepperCtrl.enable(enableState);
 	}
+	if (enableState == false)
+	{
+		SmartPlanner.stop();
+	}
 
 	//handle EEPROM
 	eepromData.angle=stepperCtrl.getCurrentAngle();
@@ -882,9 +886,11 @@ void NZS::loop(void)
 	eepromData.valid=1;
 	eepromWriteCache((uint8_t *)&eepromData,sizeof(eepromData));
 
+	commandsProcess(); //handle commands
+
 	if (!stepperCtrl.getRequestedAngleReached())
 	{
-		if (stepperCtrl.checkForRequestedAngle())
+		if (stepperCtrl.checkForRequestedAngle() || enableState == false)
 		{
 			stepperCtrl.setRequestedAngleReached(true);
 			SerialUSB.println("DONE");
@@ -893,8 +899,7 @@ void NZS::loop(void)
 #endif
 		}
 	}
-
-	commandsProcess(); //handle commands
+	
 #ifndef DISABLE_LCD
 	Lcd.process();
 #endif
