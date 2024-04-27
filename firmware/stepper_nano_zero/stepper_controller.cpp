@@ -901,7 +901,6 @@ void StepperCtrl::moveToAbsAngle(int32_t a)
 	ret=(((int64_t)a+zeroAngleOffset)*n+ANGLE_STEPS/2)/(int32_t)ANGLE_STEPS;
 	bool state=enterCriticalSection();
 	numSteps=ret;
-	setIsMoving(true);
 	exitCriticalSection(state);
 }
 
@@ -1637,14 +1636,6 @@ bool StepperCtrl::processFeedback(void)
 	updateSteps(x);
 	lastSteps+=x;
 #endif
-
-	bool state=enterCriticalSection();
-	if (getIsMoving()) {
-		if (checkForRequestedAngle()) {
-			setIsMoving(false);
-		}
-	}
-	exitCriticalSection(state);
 
 //	steps=getSteps();
 //	if (steps>0)
