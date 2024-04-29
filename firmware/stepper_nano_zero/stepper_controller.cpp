@@ -901,7 +901,6 @@ void StepperCtrl::moveToAbsAngle(int32_t a)
 	ret=(((int64_t)a+zeroAngleOffset)*n+ANGLE_STEPS/2)/(int32_t)ANGLE_STEPS;
 	bool state=enterCriticalSection();
 	numSteps=ret;
-	setIsMoving(true);
 	exitCriticalSection(state);
 }
 
@@ -983,49 +982,6 @@ int64_t StepperCtrl::getVelocity(void)
 	vel=velocity;
 	exitCriticalSection(state);
 	return vel;
-}
-
-void StepperCtrl::setRequestedAngle(int64_t angle)
-{
-	bool state=enterCriticalSection();
-	requestedAngle = angle;
-	exitCriticalSection(state);
-}
-
-int64_t StepperCtrl::getRequestedAngle(void)
-{
-	int64_t angle;
-	bool state=enterCriticalSection();
-	angle = requestedAngle;
-	exitCriticalSection(state);
-	return angle;
-}
-
-bool StepperCtrl::checkForRequestedAngle(void)
-{
-	int64_t current, requested;
-	bool state=enterCriticalSection();
-	current = getCurrentAngle();
-	requested = getRequestedAngle();
-	exitCriticalSection(state);
-	// NOTE: Threshold must be large enough to not lock up
-	return (abs(current - requested) < 5);
-}
-
-void StepperCtrl::setRequestedAngleReached(bool request_flag)
-{
-	bool state=enterCriticalSection();
-	requestedAngleReached = request_flag;
-	exitCriticalSection(state);
-}
-
-bool StepperCtrl::getRequestedAngleReached(void)
-{
-	bool request_flag;
-	bool state=enterCriticalSection();
-	request_flag = requestedAngleReached;
-	exitCriticalSection(state);
-	return request_flag;
 }
 
 void StepperCtrl::setIsMoving(bool moving_flag)
@@ -1637,14 +1593,6 @@ bool StepperCtrl::processFeedback(void)
 	updateSteps(x);
 	lastSteps+=x;
 #endif
-
-	bool state=enterCriticalSection();
-	if (getIsMoving()) {
-		if (checkForRequestedAngle()) {
-			setIsMoving(false);
-		}
-	}
-	exitCriticalSection(state);
 
 //	steps=getSteps();
 //	if (steps>0)

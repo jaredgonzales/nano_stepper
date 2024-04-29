@@ -509,6 +509,17 @@ void TC5_Handler()
 
 		error=(stepperCtrl.processFeedback()); //handle the control loop
 		YELLOW_LED(error);
+
+		// Respond extra quick to small request
+		if (!error && stepperCtrl.getIsMoving())
+		{
+			SerialUSB.println("DONE");
+#ifdef CMD_SERIAL_PORT
+			Serial5.println("DONE");
+#endif
+			stepperCtrl.setIsMoving(false);
+		}
+
 #ifdef PIN_ENABLE
 		GPIO_OUTPUT(PIN_ERROR);
 		bool level;
@@ -887,18 +898,6 @@ void NZS::loop(void)
 	eepromWriteCache((uint8_t *)&eepromData,sizeof(eepromData));
 
 	commandsProcess(); //handle commands
-
-	if (!stepperCtrl.getRequestedAngleReached())
-	{
-		if (stepperCtrl.checkForRequestedAngle() || enableState == false)
-		{
-			stepperCtrl.setRequestedAngleReached(true);
-			SerialUSB.println("DONE");
-#ifdef CMD_SERIAL_PORT
-			Serial5.println("DONE");
-#endif
-		}
-	}
 	
 #ifndef DISABLE_LCD
 	Lcd.process();
