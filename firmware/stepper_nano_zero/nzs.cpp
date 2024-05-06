@@ -889,6 +889,14 @@ void NZS::loop(void)
 
 	commandsProcess(); //handle commands
 
+	if (enableState == false && !stepperCtrl.getRequestedAngleReached())
+	{
+		SerialUSB.println("DONE");
+#ifdef CMD_SERIAL_PORT
+		Serial5.println("DONE");
+#endif
+		stepperCtrl.setRequestedAngleReached(true);
+	}
 	if (!stepperCtrl.getRequestedAngleReached() && stepperCtrl.checkForRequestedAngle())
 	{
 		SerialUSB.println("DONE");
