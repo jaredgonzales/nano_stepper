@@ -1048,9 +1048,9 @@ static int move_cmd(sCmdUart *ptrUart,int argc, char * argv[])
 		f=atof(argv[0]);
 		x=ANGLE_FROM_DEGREES(f);
 		LOG("moving %d", x);
-		stepperCtrl.setIsMoving(true);
 		stepperCtrl.moveToAbsAngle(x);
-		
+		stepperCtrl.setRequestedAngle(x);
+		stepperCtrl.setRequestedAngleReached(false);
 	}
 	if (2 == argc)
 	{
@@ -1061,8 +1061,9 @@ static int move_cmd(sCmdUart *ptrUart,int argc, char * argv[])
 
 		x=ANGLE_FROM_DEGREES(f);
 		LOG("moving %d", x);
-		stepperCtrl.setIsMoving(true);
 		SmartPlanner.moveConstantVelocity(f,rpm);
+		stepperCtrl.setRequestedAngle(x);
+		stepperCtrl.setRequestedAngleReached(false);
 	}
 
 	return 0;

@@ -200,9 +200,13 @@ class StepperCtrl
 		int64_t getCurrentAngle(void);
 		int64_t getDesiredAngle(void);
 
-		volatile bool isMoving;
-		void setIsMoving(bool moving_flag);
-		bool getIsMoving(void);
+		int64_t requestedAngle; // Allows checking for when the angle requested by a user is found
+		bool requestedAngleReached;
+		void setRequestedAngle(int64_t angle);
+		int64_t getRequestedAngle(void);
+		bool checkForRequestedAngle(void);
+		void setRequestedAngleReached(bool request_flag);
+		bool getRequestedAngleReached(void);
 		
 		void move(int dir, uint16_t steps); //forces motor to move even if feedback controller is turned off.
 		void enable(bool enable);

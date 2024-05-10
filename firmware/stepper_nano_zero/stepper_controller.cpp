@@ -984,20 +984,57 @@ int64_t StepperCtrl::getVelocity(void)
 	return vel;
 }
 
-void StepperCtrl::setIsMoving(bool moving_flag)
+void StepperCtrl::setRequestedAngle(int64_t angle)
 {
 	bool state=enterCriticalSection();
-	isMoving = moving_flag;
+	requestedAngle = angle;
 	exitCriticalSection(state);
 }
 
-bool StepperCtrl::getIsMoving(void)
+int64_t StepperCtrl::getRequestedAngle(void)
 {
-	bool moving_flag;
+	int64_t angle;
 	bool state=enterCriticalSection();
-	moving_flag = isMoving;
+	angle = requestedAngle;
 	exitCriticalSection(state);
-	return moving_flag;
+	return angle;
+}
+
+bool StepperCtrl::checkForRequestedAngle(void)
+{
+	float current_pos, requested_pos;
+	int32_t current_angle,requested_angle;
+	int32_t difference;
+	char s[128];
+
+	current_pos=ANGLE_T0_DEGREES(getCurrentAngle());
+	current_angle=int(current_pos);
+
+	requested_pos = ANGLE_T0_DEGREES(getRequestedAngle());
+	requested_angle=int(requested_pos);
+
+	difference = abs(current_angle - requested_angle);
+
+	// sprintf(s, "%d vs %d == abs %d", current_angle, requested_angle, difference);
+	// SerialUSB.println(s);
+	// NOTE: Threshold must be large enough to not lock up
+	return (difference < 2);
+}
+
+void StepperCtrl::setRequestedAngleReached(bool request_flag)
+{
+	bool state=enterCriticalSection();
+	requestedAngleReached = request_flag;
+	exitCriticalSection(state);
+}
+
+bool StepperCtrl::getRequestedAngleReached(void)
+{
+	bool request_flag;
+	bool state=enterCriticalSection();
+	request_flag = requestedAngleReached;
+	exitCriticalSection(state);
+	return request_flag;
 }
 
 void StepperCtrl::PrintData(void)
