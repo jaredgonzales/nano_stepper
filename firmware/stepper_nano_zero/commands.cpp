@@ -327,7 +327,7 @@ static int setpos_cmd(sCmdUart *ptrUart,int argc, char * argv[])
 	{
 		int64_t a;
 		float x;
-		x=fabs(atof(argv[0]));
+		x=atof(argv[0]);
 		a=ANGLE_FROM_DEGREES(x);
 		stepperCtrl.setAngle(a);
 		return 0;
