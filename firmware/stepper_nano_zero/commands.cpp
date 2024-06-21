@@ -297,7 +297,7 @@ static int home_cmd(sCmdUart *ptrUart,int argc, char * argv[])
 	}
 
 	//setup a interrupt for the enable  pin
-	attachInterrupt(digitalPinToInterrupt(PIN_ENABLE), errorPinISR, FALLING);
+	attachInterrupt(digitalPinToInterrupt(PIN_STEP_INPUT), errorPinISR, FALLING);
 
 	SmartPlanner.moveConstantVelocity(finalDegrees,rpm);
 
@@ -305,7 +305,7 @@ static int home_cmd(sCmdUart *ptrUart,int argc, char * argv[])
 	{
 		//do nothing
 	}
-	detachInterrupt(digitalPinToInterrupt(PIN_ENABLE));
+	detachInterrupt(digitalPinToInterrupt(PIN_STEP_INPUT));
 	deg=ANGLE_T0_DEGREES(stepperCtrl.getCurrentAngle());
 	ftoa(deg,str,2,'f');
 	CommandPrintf(ptrUart,"home is %s deg\n\r",str);
